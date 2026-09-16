@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime
 
 # =========================================================
-# PAGE CONFIG
+# CẤU HÌNH TRANG
 # =========================================================
 st.set_page_config(
     page_title="Tiết kiệm có kỳ hạn",
@@ -21,146 +21,160 @@ if "result" not in st.session_state:
 
 
 # =========================================================
-# FUNCTIONS
+# HÀM FORMAT TIỀN
 # =========================================================
 def format_money(value):
     return f"{value:,.0f}".replace(",", ".") + " đ"
 
 
+# =========================================================
+# HÀM TÍNH TOÁN
+# =========================================================
 def calculate(principal, months, rate):
+
     annual_rate = rate / 100
     years = months / 12
 
-    # Lãi đơn
-    simple_interest = principal * annual_rate * years
-    simple_total = principal + simple_interest
+    # -------------------------
+    # LÃI ĐƠN
+    # -------------------------
+    simple_interest = (
+        principal * annual_rate * years
+    )
 
-    # Lãi kép theo tháng
+    simple_total = (
+        principal + simple_interest
+    )
+
+    # -------------------------
+    # LÃI KÉP THEO THÁNG
+    # -------------------------
     monthly_rate = annual_rate / 12
-    compound_total = principal * (1 + monthly_rate) ** months
-    compound_interest = compound_total - principal
 
-    difference = compound_total - simple_total
+    compound_total = (
+        principal
+        * (1 + monthly_rate) ** months
+    )
+
+    compound_interest = (
+        compound_total - principal
+    )
+
+    difference = (
+        compound_total - simple_total
+    )
 
     return {
         "principal": principal,
         "months": months,
         "rate": rate,
-        "simple_interest": simple_interest,
-        "simple_total": simple_total,
-        "compound_interest": compound_interest,
-        "compound_total": compound_total,
-        "difference": difference,
+
         "annual_rate": annual_rate,
         "monthly_rate": monthly_rate,
         "years": years,
-        "time": datetime.now().strftime("%H:%M - %d/%m/%Y")
+
+        "simple_interest": simple_interest,
+        "simple_total": simple_total,
+
+        "compound_interest": compound_interest,
+        "compound_total": compound_total,
+
+        "difference": difference,
+
+        "time": datetime.now().strftime(
+            "%H:%M - %d/%m/%Y"
+        )
     }
 
 
 # =========================================================
 # CSS
 # =========================================================
-st.markdown("""
+st.markdown(
+    """
 <style>
 
-/* =========================
-   GLOBAL
-========================= */
+/* ========================================================
+   NỀN TOÀN TRANG
+======================================================== */
 
 .stApp {
     background:
-        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, .16), transparent 28%),
-        radial-gradient(circle at 90% 15%, rgba(0, 179, 137, .18), transparent 27%),
-        radial-gradient(circle at 50% 95%, rgba(99, 102, 241, .10), transparent 30%),
-        #F5F8FC;
+        radial-gradient(
+            circle at 8% 8%,
+            rgba(0, 107, 255, 0.17),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 10%,
+            rgba(0, 179, 137, 0.18),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(95, 105, 255, 0.10),
+            transparent 32%
+        ),
+        #F4F8FC !important;
+
+    color: #0A1B33 !important;
 }
 
+
+/* ========================================================
+   CONTAINER
+======================================================== */
+
 .block-container {
-    max-width: 1100px;
-    padding-top: 2.2rem;
+
+    max-width: 1080px;
+
+    padding-top: 2.4rem;
     padding-bottom: 5rem;
 }
 
-/* Font */
-html, body, [class*="css"] {
-    font-family: "Segoe UI", sans-serif;
+
+/* ========================================================
+   TEXT
+======================================================== */
+
+h1,
+h2,
+h3,
+h4,
+p,
+label {
+
+    color: #0A1B33;
 }
 
-/* =========================
+
+/* ========================================================
    HEADER
-========================= */
+======================================================== */
 
 .main-header {
-    padding: 8px 4px 26px 4px;
+
+    padding-top: 5px;
+    padding-bottom: 28px;
 }
+
 
 .main-title {
-    font-size: 43px;
+
+    font-size: 44px;
+
     font-weight: 900;
-    letter-spacing: -1.8px;
-    color: #081C35;
-    line-height: 1.05;
+
+    letter-spacing: -2px;
+
+    color: #071C35;
+
+    line-height: 1.08;
 }
+
 
 .gradient-text {
-    background: linear-gradient(
-        90deg,
-        #0066FF,
-        #00B389
-    );
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-    margin-top: 12px;
-    color: #718096;
-    font-size: 16px;
-}
-
-/* =========================
-   FORM
-========================= */
-
-div[data-testid="stForm"] {
-    background: rgba(255,255,255,.82);
-    backdrop-filter: blur(18px);
-
-    border: 1px solid rgba(255,255,255,.9);
-
-    border-radius: 25px;
-
-    padding: 28px;
-
-    box-shadow:
-        0 20px 60px rgba(13, 38, 76, .10),
-        inset 0 1px 0 rgba(255,255,255,.8);
-}
-
-div[data-testid="stNumberInput"] input {
-    background: #F6F9FD;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 16px;
-}
-
-/* =========================
-   BUTTON
-========================= */
-
-div[data-testid="stFormSubmitButton"] button {
-
-    height: 55px;
-
-    border: none;
-    border-radius: 15px;
-
-    font-size: 16px;
-    font-weight: 800;
-
-    color: white;
 
     background:
         linear-gradient(
@@ -169,69 +183,275 @@ div[data-testid="stFormSubmitButton"] button {
             #00B389
         );
 
-    box-shadow:
-        0 12px 30px rgba(0,179,137,.25);
+    -webkit-background-clip: text;
 
-    transition: all .2s ease;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
 }
 
-div[data-testid="stFormSubmitButton"] button:hover {
 
-    color: white;
+.subtitle {
 
-    transform: translateY(-2px);
+    margin-top: 11px;
 
-    box-shadow:
-        0 16px 35px rgba(0,179,137,.35);
+    color: #6E7C91;
+
+    font-size: 16px;
+
+    font-weight: 500;
 }
 
-/* =========================
-   RESULT AREA
-========================= */
+
+/* ========================================================
+   FORM
+======================================================== */
+
+div[data-testid="stForm"] {
+
+    background:
+        rgba(255,255,255,0.92) !important;
+
+    border:
+        1px solid rgba(210,222,235,0.9);
+
+    border-radius: 26px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 22px 60px
+        rgba(14,42,76,0.10);
+
+    color: #0A1B33 !important;
+}
+
+
+/* ========================================================
+   LABEL INPUT
+======================================================== */
+
+div[data-testid="stNumberInput"] label,
+div[data-testid="stSlider"] label {
+
+    color: #0A1B33 !important;
+
+    font-weight: 750 !important;
+
+    font-size: 15px !important;
+}
+
+
+/* ========================================================
+   NUMBER INPUT
+======================================================== */
+
+div[data-testid="stNumberInput"] {
+
+    color: #0A1B33 !important;
+}
+
+
+div[data-testid="stNumberInput"] > div {
+
+    background: #F4F7FB !important;
+
+    border-radius: 13px !important;
+}
+
+
+div[data-testid="stNumberInput"] input {
+
+    background: #F4F7FB !important;
+
+    color: #0A1B33 !important;
+
+    -webkit-text-fill-color:
+        #0A1B33 !important;
+
+    caret-color:
+        #006BFF !important;
+
+    font-size: 16px !important;
+
+    font-weight: 750 !important;
+
+    min-height: 48px !important;
+
+    border-radius: 12px !important;
+}
+
+
+/* ========================================================
+   +/- BUTTON
+======================================================== */
+
+div[data-testid="stNumberInput"] button {
+
+    background:
+        #F4F7FB !important;
+
+    color:
+        #0A1B33 !important;
+
+    border-color:
+        #DEE6F0 !important;
+}
+
+
+div[data-testid="stNumberInput"] button svg {
+
+    fill:
+        #0A1B33 !important;
+
+    color:
+        #0A1B33 !important;
+}
+
+
+/* ========================================================
+   CAPTION
+======================================================== */
+
+div[data-testid="stCaptionContainer"] {
+
+    color:
+        #748297 !important;
+}
+
+
+/* ========================================================
+   SLIDER
+======================================================== */
+
+div[data-testid="stSlider"] {
+
+    color:
+        #0A1B33 !important;
+}
+
+
+/* ========================================================
+   NÚT TÍNH
+======================================================== */
+
+div[data-testid="stFormSubmitButton"] button {
+
+    width: 100%;
+
+    min-height: 56px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    color: white !important;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            100deg,
+            #006BFF 0%,
+            #00A7D8 48%,
+            #00B389 100%
+        ) !important;
+
+    box-shadow:
+        0 13px 30px
+        rgba(0,160,170,0.26);
+
+    transition:
+        all 0.20s ease;
+}
+
+
+div[data-testid="stFormSubmitButton"]
+button:hover {
+
+    color:
+        white !important;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 17px 36px
+        rgba(0,160,170,0.34);
+}
+
+
+/* ========================================================
+   RESULT HEADING
+======================================================== */
 
 .result-heading {
-    margin-top: 38px;
-    margin-bottom: 18px;
+
+    margin-top: 42px;
+
+    margin-bottom: 20px;
 
     font-size: 32px;
+
     font-weight: 900;
 
-    color: #081C35;
+    color: #071C35;
 }
 
-.result-box {
+
+/* ========================================================
+   RESULT CARD
+======================================================== */
+
+.result-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 300px;
+
+    padding: 29px;
+
+    border-radius: 25px;
 
     background:
         linear-gradient(
             145deg,
-            #0A1B33,
-            #123D66 58%,
-            #008B76
+            #081A31 0%,
+            #103B63 55%,
+            #007E70 100%
         );
 
-    border-radius: 25px;
-
-    padding: 28px;
-
-    color: white;
-
     box-shadow:
-        0 20px 50px rgba(10,27,51,.20);
+        0 22px 50px
+        rgba(8,26,49,0.20);
 
-    position: relative;
-    overflow: hidden;
+    border:
+        1px solid
+        rgba(255,255,255,0.10);
+
+    color:
+        white;
 }
 
-.result-box::before {
+
+/* ánh sáng góc card */
+
+.result-card::before {
 
     content: "";
 
     position: absolute;
 
-    width: 220px;
-    height: 220px;
+    width: 230px;
 
-    right: -80px;
+    height: 230px;
+
+    right: -85px;
+
     top: -90px;
 
     border-radius: 50%;
@@ -239,256 +459,664 @@ div[data-testid="stFormSubmitButton"] button:hover {
     background:
         radial-gradient(
             circle,
-            rgba(73,255,214,.30),
-            transparent 65%
+            rgba(71,255,213,0.34),
+            rgba(71,255,213,0)
+            68%
         );
 }
 
-.result-type {
-    font-size: 15px;
-    font-weight: 700;
 
-    color: rgba(255,255,255,.72);
-}
+/* ánh sáng phụ */
 
-.result-interest {
+.result-card::after {
 
-    font-size: 27px;
-    font-weight: 800;
+    content: "";
 
-    margin-top: 7px;
+    position: absolute;
 
-    color: white;
-}
+    width: 160px;
 
-.result-label {
+    height: 160px;
 
-    font-size: 13px;
+    left: -90px;
 
-    color: rgba(255,255,255,.65);
+    bottom: -100px;
 
-    margin-top: 22px;
-}
-
-.result-total {
-
-    font-size: 34px;
-    font-weight: 900;
-
-    margin-top: 3px;
-
-    color: #5FFFD7;
-
-    letter-spacing: -1px;
-}
-
-.badge {
-
-    display: inline-block;
-
-    margin-top: 17px;
-
-    padding: 7px 13px;
-
-    border-radius: 999px;
-
-    background: rgba(95,255,215,.14);
-
-    border: 1px solid rgba(95,255,215,.25);
-
-    color: #70FFDB;
-
-    font-size: 13px;
-
-    font-weight: 800;
-}
-
-/* =========================
-   SUMMARY
-========================= */
-
-.summary-box {
-
-    margin-top: 25px;
-
-    padding: 21px 24px;
-
-    border-radius: 18px;
+    border-radius: 50%;
 
     background:
-        linear-gradient(
-            135deg,
-            rgba(225,255,247,.95),
-            rgba(239,248,255,.95)
+        radial-gradient(
+            circle,
+            rgba(0,107,255,0.35),
+            transparent 70%
         );
-
-    border: 1px solid #C8F1E6;
-
-    box-shadow:
-        0 10px 30px rgba(0,179,137,.07);
 }
 
-.summary-title {
+
+.result-type {
+
+    position: relative;
+
+    z-index: 2;
+
+    font-size: 13px;
 
     font-weight: 850;
 
-    font-size: 16px;
+    letter-spacing: 1.3px;
 
-    color: #087A62;
+    color:
+        rgba(255,255,255,0.72);
 }
 
-.summary-value {
 
-    margin-top: 7px;
+.result-label {
 
-    font-size: 23px;
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 25px;
+
+    font-size: 14px;
+
+    color:
+        rgba(255,255,255,0.68);
+}
+
+
+.result-interest {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 4px;
+
+    color:
+        white;
+
+    font-size: 29px;
+
+    font-weight: 850;
+
+    letter-spacing: -0.6px;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+.result-total {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 4px;
+
+    color:
+        #65FFDA;
+
+    font-size: 34px;
 
     font-weight: 900;
 
-    color: #063D36;
+    letter-spacing: -1px;
+
+    font-variant-numeric:
+        tabular-nums;
 }
 
-/* =========================
+
+/* ========================================================
+   BADGE
+======================================================== */
+
+.profit-badge {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: inline-block;
+
+    margin-top: 18px;
+
+    padding:
+        8px 13px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(101,255,218,0.13);
+
+    border:
+        1px solid
+        rgba(101,255,218,0.28);
+
+    color:
+        #72FFDE;
+
+    font-size:
+        13px;
+
+    font-weight:
+        800;
+}
+
+
+/* ========================================================
+   SUMMARY CARD
+======================================================== */
+
+.summary-box {
+
+    margin-top: 24px;
+
+    padding: 22px 24px;
+
+    border-radius: 19px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #E3FFF7,
+            #EDF8FF
+        );
+
+    border:
+        1px solid
+        #C7EFE4;
+
+    box-shadow:
+        0 12px 30px
+        rgba(0,179,137,0.08);
+}
+
+
+.summary-label {
+
+    color:
+        #23806C;
+
+    font-size:
+        14px;
+
+    font-weight:
+        750;
+}
+
+
+.summary-money {
+
+    margin-top:
+        4px;
+
+    color:
+        #075848;
+
+    font-size:
+        26px;
+
+    font-weight:
+        900;
+}
+
+
+.summary-description {
+
+    margin-top:
+        5px;
+
+    color:
+        #648177;
+
+    font-size:
+        14px;
+}
+
+
+/* ========================================================
    HISTORY
-========================= */
+======================================================== */
 
-.history-title {
+.history-heading {
 
-    margin-top: 45px;
+    margin-top:
+        48px;
 
-    font-size: 31px;
+    font-size:
+        31px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    color: #081C35;
+    color:
+        #071C35;
 }
+
 
 .history-card {
 
-    padding: 20px 23px;
+    margin-top:
+        14px;
 
-    margin-top: 13px;
+    padding:
+        20px 22px;
 
-    background: rgba(255,255,255,.92);
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.94
+        );
 
-    border: 1px solid #E1EAF3;
+    border:
+        1px solid
+        #DFE8F1;
 
-    border-radius: 18px;
+    border-radius:
+        19px;
 
     box-shadow:
-        0 9px 25px rgba(19,45,80,.06);
+        0 10px 28px
+        rgba(13,41,75,0.06);
 }
+
 
 .history-date {
 
-    font-size: 12px;
+    color:
+        #8592A4;
 
-    font-weight: 700;
+    font-size:
+        12px;
 
-    color: #8996A8;
+    font-weight:
+        700;
 }
 
-.history-money {
 
-    margin-top: 5px;
+.history-total {
 
-    font-size: 22px;
+    margin-top:
+        5px;
 
-    font-weight: 900;
+    color:
+        #071C35;
 
-    color: #0A1B33;
+    font-size:
+        22px;
+
+    font-weight:
+        900;
 }
 
-.history-info {
 
-    margin-top: 7px;
+.history-detail {
 
-    color: #627187;
+    margin-top:
+        8px;
 
-    font-size: 14px;
+    color:
+        #64748B;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.6;
 }
 
-/* =========================
+
+.history-profit {
+
+    color:
+        #009976;
+
+    font-weight:
+        800;
+}
+
+
+/* ========================================================
    EXPANDER
-========================= */
+======================================================== */
 
 div[data-testid="stExpander"] {
 
-    background: rgba(255,255,255,.9);
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.92
+        ) !important;
 
-    border-radius: 16px;
+    border:
+        1px solid
+        #DFE7F0 !important;
 
-    border: 1px solid #DFE7F0;
+    border-radius:
+        17px !important;
 
-    overflow: hidden;
+    overflow:
+        hidden;
+
+    color:
+        #0A1B33 !important;
 }
 
-/* =========================
+
+div[data-testid="stExpander"]
+summary {
+
+    color:
+        #0A1B33 !important;
+
+    font-weight:
+        750 !important;
+}
+
+
+/* ========================================================
    DATAFRAME
-========================= */
+======================================================== */
 
 div[data-testid="stDataFrame"] {
 
-    border-radius: 15px;
+    border-radius:
+        16px;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 }
 
-/* =========================
-   MOBILE
-========================= */
 
-@media (max-width: 768px) {
+/* ========================================================
+   SECONDARY BUTTON
+======================================================== */
+
+div[data-testid="stButton"] button {
+
+    border-radius:
+        12px;
+
+    font-weight:
+        700;
+}
+
+
+/* ========================================================
+   MOBILE
+======================================================== */
+
+@media (
+    max-width: 768px
+) {
 
     .block-container {
-        padding: 1.2rem;
+
+        max-width:
+            100% !important;
+
+        padding:
+            1.25rem
+            1rem
+            4rem
+            1rem !important;
     }
+
+
+    .main-header {
+
+        padding-bottom:
+            20px;
+    }
+
 
     .main-title {
-        font-size: 33px;
+
+        font-size:
+            32px !important;
+
+        letter-spacing:
+            -1.2px !important;
+
+        line-height:
+            1.15;
     }
 
-    .result-total {
-        font-size: 27px;
+
+    .subtitle {
+
+        font-size:
+            14px;
+
+        line-height:
+            1.5;
     }
 
-    .result-interest {
-        font-size: 23px;
-    }
 
     div[data-testid="stForm"] {
-        padding: 19px;
+
+        padding:
+            20px !important;
+
+        border-radius:
+            22px !important;
     }
+
+
+    div[data-testid="stNumberInput"]
+    input {
+
+        min-height:
+            50px !important;
+
+        font-size:
+            16px !important;
+    }
+
+
+    .result-heading {
+
+        font-size:
+            28px;
+
+        margin-top:
+            32px;
+    }
+
+
+    .result-card {
+
+        min-height:
+            255px;
+
+        padding:
+            23px;
+
+        border-radius:
+            22px;
+    }
+
+
+    .result-interest {
+
+        font-size:
+            24px;
+    }
+
+
+    .result-total {
+
+        font-size:
+            27px;
+
+        overflow-wrap:
+            anywhere;
+    }
+
+
+    .summary-money {
+
+        font-size:
+            23px;
+    }
+
+
+    .history-heading {
+
+        font-size:
+            27px;
+    }
+
+
+    .history-total {
+
+        font-size:
+            20px;
+    }
+
+}
+
+
+/* ========================================================
+   FIX DARK MODE CỦA STREAMLIT
+======================================================== */
+
+@media (
+    prefers-color-scheme: dark
+) {
+
+    .stApp {
+
+        background:
+            radial-gradient(
+                circle at 8% 8%,
+                rgba(0,107,255,.16),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 92% 10%,
+                rgba(0,179,137,.16),
+                transparent 28%
+            ),
+            #F4F8FC !important;
+
+        color:
+            #0A1B33 !important;
+    }
+
+
+    div[data-testid="stForm"] {
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.95
+            ) !important;
+
+        color:
+            #0A1B33 !important;
+    }
+
+
+    div[data-testid="stNumberInput"]
+    input {
+
+        background:
+            #F4F7FB !important;
+
+        color:
+            #0A1B33 !important;
+
+        -webkit-text-fill-color:
+            #0A1B33 !important;
+    }
+
+
+    div[data-testid="stNumberInput"]
+    button {
+
+        background:
+            #F4F7FB !important;
+
+        color:
+            #0A1B33 !important;
+    }
+
+
+    div[data-testid="stNumberInput"]
+    label,
+    div[data-testid="stSlider"]
+    label {
+
+        color:
+            #0A1B33 !important;
+    }
+
 }
 
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
 # HEADER
 # =========================================================
-st.markdown("""
+
+st.markdown(
+    """
 <div class="main-header">
     <div class="main-title">
-        Tiết kiệm <span class="gradient-text">thông minh</span>
+        Tiết kiệm
+        <span class="gradient-text">
+            thông minh
+        </span>
     </div>
+
     <div class="subtitle">
         Tính toán và so sánh lợi nhuận tiền gửi của bạn.
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
-# INPUT FORM
+# FORM
 # =========================================================
-with st.form("saving_form"):
 
-    st.markdown("## Thông tin tiền gửi")
-    st.caption("Nhập thông tin khoản tiết kiệm bạn muốn tính.")
+with st.form(
+    "saving_form"
+):
 
-    col1, col2 = st.columns(2, gap="large")
+    st.markdown(
+        "## Thông tin tiền gửi"
+    )
+
+    st.caption(
+        "Nhập thông tin khoản tiết kiệm bạn muốn tính."
+    )
+
+    col1, col2 = st.columns(
+        2,
+        gap="large"
+    )
+
+    # -------------------------
+    # SỐ TIỀN
+    # -------------------------
 
     with col1:
 
@@ -501,8 +1129,16 @@ with st.form("saving_form"):
         )
 
         st.caption(
-            f"Số tiền hiện tại: {format_money(so_tien)}"
+            "Số tiền hiện tại: "
+            + format_money(
+                so_tien
+            )
         )
+
+
+    # -------------------------
+    # LÃI SUẤT
+    # -------------------------
 
     with col2:
 
@@ -515,8 +1151,21 @@ with st.form("saving_form"):
             format="%.2f"
         )
 
+        st.caption(
+            f"Lãi suất hiện tại: "
+            f"{lai_suat:.2f}%/năm"
+        )
+
+
+    st.write("")
+
+
+    # -------------------------
+    # KỲ HẠN
+    # -------------------------
+
     so_thang = st.slider(
-        "Thời gian gửi",
+        "Kỳ hạn gửi",
         min_value=1,
         max_value=36,
         value=12,
@@ -524,32 +1173,42 @@ with st.form("saving_form"):
     )
 
     st.caption(
-        f"Kỳ hạn đang chọn: {so_thang} tháng"
+        f"Kỳ hạn hiện tại: "
+        f"{so_thang} tháng"
     )
+
 
     st.write("")
 
-    submit = st.form_submit_button(
-        "Tính tiền tiết kiệm",
-        use_container_width=True
+
+    # -------------------------
+    # SUBMIT
+    # -------------------------
+
+    submit = (
+        st.form_submit_button(
+            "Tính tiền tiết kiệm",
+            use_container_width=True
+        )
     )
 
 
 # =========================================================
-# CALCULATE
+# XỬ LÝ SUBMIT
 # =========================================================
+
 if submit:
 
     if so_tien <= 0:
 
         st.error(
-            "Vui lòng nhập số tiền gửi lớn hơn 0."
+            "Số tiền gửi phải lớn hơn 0."
         )
 
     elif lai_suat < 0:
 
         st.error(
-            "Lãi suất không được nhỏ hơn 0."
+            "Lãi suất không được âm."
         )
 
     else:
@@ -560,47 +1219,75 @@ if submit:
             lai_suat
         )
 
-        st.session_state.result = result
+        st.session_state.result = (
+            result
+        )
 
-        # Lưu lịch sử
+        # Thêm vào đầu lịch sử
         st.session_state.history.insert(
             0,
             result.copy()
         )
 
-        # Giới hạn 10 lần gần nhất
+        # Chỉ giữ 10 lần gần nhất
         st.session_state.history = (
             st.session_state.history[:10]
         )
 
 
 # =========================================================
-# RESULT
+# KẾT QUẢ
 # =========================================================
+
 if st.session_state.result:
 
-    r = st.session_state.result
+    r = (
+        st.session_state.result
+    )
 
     st.markdown(
-        '<div class="result-heading">Kết quả tính toán</div>',
+        '<div class="result-heading">'
+        'Kết quả'
+        '</div>',
         unsafe_allow_html=True
     )
 
-    col1, col2 = st.columns(2, gap="large")
+
+    result_col1, result_col2 = (
+        st.columns(
+            2,
+            gap="large"
+        )
+    )
 
 
     # =====================================================
-    # SIMPLE
+    # LÃI ĐƠN
     # =====================================================
-    with col1:
+
+    with result_col1:
 
         simple_html = (
-            '<div class="result-box">'
-            '<div class="result-type">LÃI ĐƠN</div>'
-            '<div class="result-label">Tiền lãi nhận được</div>'
-            f'<div class="result-interest">{format_money(r["simple_interest"])}</div>'
-            '<div class="result-label">Tổng số tiền nhận được</div>'
-            f'<div class="result-total">{format_money(r["simple_total"])}</div>'
+            '<div class="result-card">'
+            '<div class="result-type">'
+            'LÃI ĐƠN'
+            '</div>'
+            '<div class="result-label">'
+            'Tiền lãi nhận được'
+            '</div>'
+            '<div class="result-interest">'
+            + format_money(
+                r["simple_interest"]
+            )
+            + '</div>'
+            '<div class="result-label">'
+            'Tổng số tiền nhận được'
+            '</div>'
+            '<div class="result-total">'
+            + format_money(
+                r["simple_total"]
+            )
+            + '</div>'
             '</div>'
         )
 
@@ -611,18 +1298,39 @@ if st.session_state.result:
 
 
     # =====================================================
-    # COMPOUND
+    # LÃI KÉP
     # =====================================================
-    with col2:
+
+    with result_col2:
 
         compound_html = (
-            '<div class="result-box">'
-            '<div class="result-type">LÃI KÉP • GỘP THÁNG</div>'
-            '<div class="result-label">Tiền lãi nhận được</div>'
-            f'<div class="result-interest">{format_money(r["compound_interest"])}</div>'
-            '<div class="result-label">Tổng số tiền nhận được</div>'
-            f'<div class="result-total">{format_money(r["compound_total"])}</div>'
-            f'<div class="badge">+ {format_money(r["difference"])} so với lãi đơn</div>'
+            '<div class="result-card">'
+            '<div class="result-type">'
+            'LÃI KÉP • GỘP THÁNG'
+            '</div>'
+            '<div class="result-label">'
+            'Tiền lãi nhận được'
+            '</div>'
+            '<div class="result-interest">'
+            + format_money(
+                r["compound_interest"]
+            )
+            + '</div>'
+            '<div class="result-label">'
+            'Tổng số tiền nhận được'
+            '</div>'
+            '<div class="result-total">'
+            + format_money(
+                r["compound_total"]
+            )
+            + '</div>'
+            '<div class="profit-badge">'
+            '+ '
+            + format_money(
+                r["difference"]
+            )
+            + ' so với lãi đơn'
+            '</div>'
             '</div>'
         )
 
@@ -633,66 +1341,97 @@ if st.session_state.result:
 
 
     # =====================================================
-    # HIGHLIGHT
+    # CHÊNH LỆCH
     # =====================================================
+
+    summary_html = (
+        '<div class="summary-box">'
+        '<div class="summary-label">'
+        'Lãi kép giúp bạn nhận thêm'
+        '</div>'
+        '<div class="summary-money">'
+        + format_money(
+            r["difference"]
+        )
+        + '</div>'
+        '<div class="summary-description">'
+        'So với lãi đơn trong cùng kỳ hạn '
+        'và cùng mức lãi suất.'
+        '</div>'
+        '</div>'
+    )
+
     st.markdown(
-        (
-            '<div class="summary-box">'
-            '<div class="summary-title">'
-            'Chênh lệch lợi nhuận'
-            '</div>'
-            f'<div class="summary-value">{format_money(r["difference"])}</div>'
-            '<div style="color:#648176;margin-top:5px;">'
-            'Đây là phần tiền tăng thêm khi áp dụng lãi kép theo tháng.'
-            '</div>'
-            '</div>'
-        ),
+        summary_html,
         unsafe_allow_html=True
     )
 
 
     # =====================================================
-    # SUMMARY TABLE
+    # BẢNG TỔNG KẾT
     # =====================================================
-    st.markdown("### Tổng kết")
 
-    summary = {
+    st.markdown(
+        "### Tổng kết kết quả"
+    )
+
+    summary_data = {
+
         "Phương thức": [
             "Lãi đơn",
             "Lãi kép"
         ],
 
         "Tiền gốc": [
-            format_money(r["principal"]),
-            format_money(r["principal"])
+            format_money(
+                r["principal"]
+            ),
+            format_money(
+                r["principal"]
+            )
         ],
 
         "Tiền lãi": [
-            format_money(r["simple_interest"]),
-            format_money(r["compound_interest"])
+            format_money(
+                r["simple_interest"]
+            ),
+            format_money(
+                r["compound_interest"]
+            )
         ],
 
         "Tổng nhận": [
-            format_money(r["simple_total"]),
-            format_money(r["compound_total"])
+            format_money(
+                r["simple_total"]
+            ),
+            format_money(
+                r["compound_total"]
+            )
         ]
     }
 
     st.dataframe(
-        summary,
+        summary_data,
         hide_index=True,
         use_container_width=True
     )
 
 
     # =====================================================
-    # FORMULA
+    # CÔNG THỨC
     # =====================================================
+
     with st.expander(
         "Xem chi tiết cách tính"
     ):
 
-        st.markdown("### Lãi đơn")
+        # -------------------------
+        # LÃI ĐƠN
+        # -------------------------
+
+        st.markdown(
+            "### Lãi đơn"
+        )
 
         st.latex(
             r"A = P(1 + rt)"
@@ -700,27 +1439,41 @@ if st.session_state.result:
 
         st.write(
             f"""
-**P:** {format_money(r["principal"])}
+**Tiền gốc P:** {format_money(r["principal"])}
 
-**r:** {r["annual_rate"]:.4f}
+**Lãi suất năm r:** {r["annual_rate"]:.4f}
 
-**t:** {r["months"]}/12 = {r["years"]:.2f} năm
+**Thời gian t:** {r["months"]}/12 = {r["years"]:.2f} năm
 """
         )
 
         st.code(
-            f'A = {r["principal"]:,.0f} × '
-            f'(1 + {r["annual_rate"]:.4f} × '
+            f'A = '
+            f'{r["principal"]:,.0f} '
+            f'× '
+            f'(1 + '
+            f'{r["annual_rate"]:.4f} '
+            f'× '
             f'{r["years"]:.2f})'
         )
 
         st.success(
-            f'Tổng nhận: {format_money(r["simple_total"])}'
+            "Tổng tiền lãi đơn: "
+            + format_money(
+                r["simple_total"]
+            )
         )
 
         st.divider()
 
-        st.markdown("### Lãi kép")
+
+        # -------------------------
+        # LÃI KÉP
+        # -------------------------
+
+        st.markdown(
+            "### Lãi kép"
+        )
 
         st.latex(
             r"A = P(1+r/12)^n"
@@ -728,32 +1481,41 @@ if st.session_state.result:
 
         st.write(
             f"""
-**P:** {format_money(r["principal"])}
+**Tiền gốc P:** {format_money(r["principal"])}
 
-**r:** {r["annual_rate"]:.4f}
+**Lãi suất năm r:** {r["annual_rate"]:.4f}
 
-**n:** {r["months"]} tháng
+**Số tháng n:** {r["months"]}
 
 **Lãi suất tháng:** {r["monthly_rate"] * 100:.4f}%
 """
         )
 
         st.code(
-            f'A = {r["principal"]:,.0f} × '
-            f'(1 + {r["monthly_rate"]:.6f})'
+            f'A = '
+            f'{r["principal"]:,.0f} '
+            f'× '
+            f'(1 + '
+            f'{r["monthly_rate"]:.6f})'
             f'^{r["months"]}'
         )
 
         st.success(
-            f'Tổng nhận: {format_money(r["compound_total"])}'
+            "Tổng tiền lãi kép: "
+            + format_money(
+                r["compound_total"]
+            )
         )
 
 
 # =========================================================
-# HISTORY
+# LỊCH SỬ TRA CỨU
 # =========================================================
+
 st.markdown(
-    '<div class="history-title">Lịch sử tra cứu</div>',
+    '<div class="history-heading">'
+    'Lịch sử tra cứu'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -762,13 +1524,19 @@ st.caption(
 )
 
 
+# =========================================================
+# CÓ LỊCH SỬ
+# =========================================================
+
 if st.session_state.history:
 
-    col_title, col_delete = st.columns(
-        [4, 1]
+    title_col, delete_col = (
+        st.columns(
+            [4, 1]
+        )
     )
 
-    with col_delete:
+    with delete_col:
 
         if st.button(
             "Xóa lịch sử",
@@ -780,19 +1548,43 @@ if st.session_state.history:
             st.rerun()
 
 
-    for index, item in enumerate(
+    for item in (
         st.session_state.history
     ):
 
         history_html = (
             '<div class="history-card">'
-            f'<div class="history-date">{item["time"]}</div>'
-            f'<div class="history-money">{format_money(item["compound_total"])}</div>'
-            '<div class="history-info">'
-            f'Gửi <b>{format_money(item["principal"])}</b>'
-            f' &nbsp; • &nbsp; {item["months"]} tháng'
-            f' &nbsp; • &nbsp; {item["rate"]:.2f}%/năm'
-            f' &nbsp; • &nbsp; Lãi kép: <b>{format_money(item["compound_interest"])}</b>'
+            '<div class="history-date">'
+            + item["time"]
+            + '</div>'
+            '<div class="history-total">'
+            + format_money(
+                item["compound_total"]
+            )
+            + '</div>'
+            '<div class="history-detail">'
+            'Tiền gửi: <b>'
+            + format_money(
+                item["principal"]
+            )
+            + '</b>'
+            '<br>'
+            'Kỳ hạn: <b>'
+            + str(
+                item["months"]
+            )
+            + ' tháng</b>'
+            ' &nbsp; • &nbsp; '
+            'Lãi suất: <b>'
+            + f'{item["rate"]:.2f}%/năm'
+            + '</b>'
+            '<br>'
+            'Lãi kép nhận được: '
+            '<span class="history-profit">'
+            + format_money(
+                item["compound_interest"]
+            )
+            + '</span>'
             '</div>'
             '</div>'
         )
@@ -802,17 +1594,27 @@ if st.session_state.history:
             unsafe_allow_html=True
         )
 
+
+# =========================================================
+# CHƯA CÓ LỊCH SỬ
+# =========================================================
+
 else:
 
     st.info(
-        "Chưa có lịch sử tra cứu. Hãy thực hiện phép tính đầu tiên."
+        "Chưa có lịch sử tra cứu. "
+        "Hãy thực hiện phép tính đầu tiên."
     )
 
 
 # =========================================================
 # FOOTER
 # =========================================================
-st.markdown("<br>", unsafe_allow_html=True)
+
+st.markdown(
+    "<br>",
+    unsafe_allow_html=True
+)
 
 st.divider()
 
