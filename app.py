@@ -1076,19 +1076,25 @@ div[data-testid="stButton"] button {
 
 st.markdown(
     """
-<div class="main-header">
     <div class="main-title">
-        Tiết kiệm
-        <span class="gradient-text">
-            thông minh
-        </span>
+        Tiết kiệm <span class="gradient-text">thông minh</span>
     </div>
+    """,
+    unsafe_allow_html=True
+)
 
-    <div class="subtitle">
+st.markdown(
+    """
+    <p style="
+        margin-top: 8px;
+        margin-bottom: 28px;
+        color: #6E7C91;
+        font-size: 16px;
+        font-weight: 500;
+    ">
         Tính toán và so sánh lợi nhuận tiền gửi của bạn.
-    </div>
-</div>
-""",
+    </p>
+    """,
     unsafe_allow_html=True
 )
 
